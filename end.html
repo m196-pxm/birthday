@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>许小兰妈妈生日快乐</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: '微软雅黑';
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ff69b4;
+            text-shadow: 0 0 15px #ff1493;
+            margin: 30px 0;
+        }
+        #photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 0 30px #ff1493;
+            margin: 20px auto;
+            object-fit: cover;
+        }
+        .message {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 25px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 15px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        .message p {
+            margin: 15px 0;
+        }
+        .signature {
+            font-family: '楷体';
+            font-size: 1.2em;
+            margin-top: 25px;
+            color: #ffb6c1;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            #photo { width: 150px; height: 150px; }
+            .message { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 许小兰妈妈生日快乐！ 🎉</h1>
+        
+        <div class="message">
+            <p>亲爱的妈妈：</p >
+            <p>在这个特别的日子里，感谢您一直以来的爱与付出！</p >
+            <p>小满胜大全，愿您健康常伴，笑容永驻，幸福安康！</p >
+            <p>我们永远爱您！❤️</p >
+            <p class="signature">—— 您永远的孩子</p >
+        </div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+
+    <!-- 可靠生日歌源 -->
+    <audio id="music">
+        <source src="https://cdn.jsdelivr.net/gh/forsigner/static/music/happy-birthday.mp3" type="audio/mpeg">
+    </audio>
+
+<script>
+// 烟花特效
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+function createFirework() {
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height;
+    const hue = Math.random() * 360;
+    
+    const particles = [];
+    for(let i = 0; i < 100; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(i) * Math.random() * 5,
+            vy: Math.sin(i) * Math.random() * 5,
+            alpha: 1
+        });
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, i) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.01;
+
+            ctx.fillStyle = `hsla(${hue}, 100%, 50%, ${p.alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            if(p.alpha <= 0) particles.splice(i, 1);
+        });
+
+        if(particles.length > 0) requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+// 音乐控制
+const music = document.getElementById('music');
+let hasInteracted = false;
+
+function initMusic() {
+    document.addEventListener('click', handleInteraction);
+    document.addEventListener('touchstart', handleInteraction);
+}
+
+function handleInteraction() {
+    if (!hasInteracted) {
+        music.play().catch(() => {});
+        hasInteracted = true;
+    }
+    music.paused ? music.play() : music.pause();
+}
+
+// 初始化
+setInterval(createFirework, 1500);
+initMusic();
+</script>
+</body>
+</html>
